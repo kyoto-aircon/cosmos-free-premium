@@ -7,7 +7,7 @@ A [Tampermonkey](https://www.tampermonkey.net/)/[Violentmonkey](https://violentm
 ## What it unlocks
 
 All three features below are gated purely client-side (verified by tracing the
-production JavaScript): and this userscript unlocks them for real:
+production JavaScript); this userscript unlocks them for real:
 
 | Feature | Status |
 |---|---|
@@ -46,8 +46,9 @@ site update is unlikely to break all of them at once:
    `document-start` and installs a property trap on that transport, patching
    `me.isPremium` in every rehydration entry before Apollo consumes it.
 3. **Path C — network patch.** `fetch`/XHR responses from
-   `api.cosmos.so/graphql` get `data.me.isPremium` flipped, covering any
-   client-side refetch (e.g. `GetUserSubscriptionDetails`).
+   `api.cosmos.so/graphql` get `data.me.isPremium` flipped. Best-effort
+   only: live streaming responses don't write to Apollo's cache, so this
+   covers edge cases (e.g. refetches that do), not the main path.
 
 Everything is wrapped in try/catch and fails open: if any patch fails, the
 original data/response passes through untouched, so the site keeps working.

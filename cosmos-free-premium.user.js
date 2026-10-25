@@ -7,6 +7,7 @@
 // @license      MIT
 // @match        https://www.cosmos.so/*
 // @match        https://cosmos.so/*
+// @noframes
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
@@ -29,7 +30,9 @@
  *      window[Symbol.for("ApolloSSRDataTransport")] at init; we trap that
  *      array/object and patch me entries before Apollo consumes them.
  *   C. Network patch: fetch/XHR responses from api.cosmos.so/graphql get
- *      data.me.isPremium flipped, covering any client-side refetch.
+ *      data.me.isPremium flipped. Best-effort only: live streaming
+ *      responses don't reach Apollo's InMemoryCache, so this covers
+ *      edge cases (e.g. refetches writing to cache), not the main path.
  *
  * What this unlocks (client-gated, verified):
  *   - Custom grid size (sm/md/lg)
@@ -139,10 +142,18 @@
         return;
       }
 
-      // Current user: "me" query references the logged-in user's entity.
+      // Current user: the "me" query references the logged-in user's entity.
+      // The cache key may carry arguments ("me({...})"), so match both forms.
       const root = dump["ROOT_QUERY"];
-      const me = root && root.me;
-      if (!me || !me.__ref) return;
+      if (!root) return;
+      let me = null;
+      for (const key of Object.keys(root)) {
+        if ((key === "me" || key.startsWith("me(")) && root[key] && root[key].__ref) {
+          me = root[key];
+          break;
+        }
+      }
+      if (!me) return;
 
       const entity = dump[me.__ref];
       if (!entity || entity.isPremium !== true) {
@@ -197,10 +208,15 @@
       for (const item of items) realPush.call(backing, patchTransportEntry(item));
     };
 
+    // `current` tracks the live transport: our backing array until Apollo
+    // replaces it with its own pusher object at init time. The getter must
+    // return Apollo's object afterwards, or its rehydrate entries are lost.
+    let current = backing;
+
     Object.defineProperty(window, transportSymbol, {
       configurable: true,
       enumerable: true,
-      get: () => backing,
+      get: () => current,
       set: (v) => {
         // Apollo replaces the array with its own pusher object at init
         // time; wrap its push so late-arriving entries get patched too.
@@ -210,7 +226,7 @@
             for (const item of items) originalPush.call(v, patchTransportEntry(item));
           };
         }
-        return v;
+        current = v;
       },
     });
 
@@ -223,12 +239,21 @@
   // Path C: network response patch (fetch + XHR)
   // ------------------------------------------------------------------
 
-  const isGraphQlUrl = (url) =>
-    typeof url === "string" && url.includes("api.cosmos.so/graphql");
+  // Resolve to an absolute URL so relative requests match too; tolerate
+  // invalid inputs by returning a string that never matches.
+  const isGraphQlUrl = (url) => {
+    if (typeof url !== "string" || !url) return false;
+    try {
+      const base = typeof location !== "undefined" && location && location.href;
+      return new URL(url, base || undefined).href.includes("api.cosmos.so/graphql");
+    } catch {
+      return false;
+    }
+  };;
 
   try {
     const originalFetch = window.fetch;
-    window.fetch = function (input, init) {
+    window.fetch = function (input) {
       const url = typeof input === "string" ? input : input && input.url;
       const promise = originalFetch.apply(this, arguments);
 
@@ -238,6 +263,11 @@
         // Pass through non-JSON responses untouched.
         const type = response.headers.get("content-type") || "";
         if (!type.includes("json")) return response;
+        // Null-body statuses (204/205/304) forbid Response() constructors
+        // with a body; pass them through untouched.
+        if (response.status === 204 || response.status === 205 || response.status === 304) {
+          return response;
+        }
 
         return response.text().then((text) => {
           const patched = safePatch(text);
@@ -259,6 +289,10 @@
       Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "responseText");
     const responseDesc =
       Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "response");
+    if (!responseTextDesc || !responseDesc) {
+      log("path C: XHR response getters unavailable; skipping XHR patch");
+      return;
+    }
 
     const originalOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function (method, url, ...rest) {
@@ -267,6 +301,8 @@
     };
 
     Object.defineProperty(XMLHttpRequest.prototype, "responseText", {
+      configurable: true,
+      enumerable: true,
       get() {
         const text = responseTextDesc.get.call(this);
         if (!this.__cfp_isGraphQl) return text;
@@ -275,6 +311,8 @@
     });
 
     Object.defineProperty(XMLHttpRequest.prototype, "response", {
+      configurable: true,
+      enumerable: true,
       get() {
         const text = responseDesc.get.call(this);
         if (!this.__cfp_isGraphQl) return text;
@@ -286,6 +324,6 @@
     console.warn(TAG, "XHR patch failed", err);
   }
 
-  // Debug handle: inspect state, or set ENABLED=false at runtime.
+  // Debug handle.
   window.__COSMOS_FREE_PREMIUM__ = { version: "1.0.0" };
 })();
