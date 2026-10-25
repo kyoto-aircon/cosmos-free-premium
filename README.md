@@ -58,6 +58,11 @@ render cosmetic premium badges) are deliberately left alone.
 
 ## Install
 
+**From Greasy Fork (one click):**
+https://greasyfork.org/scripts/602100-cosmos-free-premium
+
+**From source:**
+
 1. Install Tampermonkey (or Violentmonkey) for your browser.
 2. Open Tampermonkey's dashboard → Utilities → paste the contents of
    `cosmos-free-premium.user.js` as a new script (or drag the file in).

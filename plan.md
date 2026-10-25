@@ -68,8 +68,8 @@ documentation of what cannot be bypassed.
 ## Distribution (added after initial build)
 - GitHub: https://github.com/kyoto-aircon/cosmos-free-premium (public; identity
   kyoto-aircon everywhere - no personal handle in tracked files).
-- Greasyfork: publish via the web form at /en/script_versions/new using the
-  code pasted from the repo, license MIT, category "cosmos.so".
-  Precondition: the account needs a secure login method (GitHub external login
-  + password removed, or 2FA) before Greasyfork allows posting.
+- Greasyfork: published at https://greasyfork.org/scripts/602100-cosmos-free-premium
+  (version 1.0.2, MIT, public). Greasyfork auto-injects @downloadURL/@updateURL;
+  the rest of the file is byte-identical to the repo.
+  Precondition: account needs a confirmed email AND 2FA (or no password at all).
 
