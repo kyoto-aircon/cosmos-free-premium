@@ -1,0 +1,67 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "experiential/glm-5.3-uncensored:free",
+  "small_model": "experiential/glm-5.3-uncensored:free",
+  "providers": {
+    "experiential": {
+      "models": {
+        "glm-5.3-uncensored:free": {
+          "name": "GLM-5.3 Uncensored (Free)",
+          "limit": {
+            "context": 1048576,
+            "output": 131072
+          },
+          "capabilities": {
+            "tools": true,
+            "input": ["text"],
+            "output": ["text"],
+            "temperature": true,
+            "reasoning": {
+              "supported": true
+            }
+          },
+          "compatibility": {
+            "reasoningField": "reasoning_content",
+            "maxTokensField": "max_tokens"
+          },
+          "cost": [
+            {
+              "input": 0,
+              "output": 0,
+              "cache": {
+                "read": 0,
+                "write": 0
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "agent": {
+    "build": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "plan": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "heavy": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "general": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "explore": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "review": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "tester": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    },
+    "re": {
+      "model": "experiential/glm-5.3-uncensored:free"
+    }
+  }
+}
