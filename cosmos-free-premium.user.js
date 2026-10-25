@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Cosmos Free Premium
-// @namespace    https://github.com/spheraz/cosmos-free-premium
-// @version      1.0.0
+// @namespace    https://github.com/kyoto-aircon/cosmos-free-premium
+// @version      1.0.1
 // @description  Unlocks cosmos.so's client-gated Premium features (custom grid size, canvas mode, bulk export). Server-gated features are NOT bypassed — see README.
-// @author       Spheraz
+// @author       kyoto-aircon
 // @license      MIT
 // @match        https://www.cosmos.so/*
 // @match        https://cosmos.so/*
@@ -325,5 +325,5 @@
   }
 
   // Debug handle.
-  window.__COSMOS_FREE_PREMIUM__ = { version: "1.0.0" };
+  window.__COSMOS_FREE_PREMIUM__ = { version: "1.0.1" };
 })();
