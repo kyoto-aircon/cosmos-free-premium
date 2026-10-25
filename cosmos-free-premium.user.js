@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         Cosmos Free Premium
 // @namespace    https://github.com/kyoto-aircon/cosmos-free-premium
-// @version      1.0.1
+// @version      1.0.2
 // @description  Unlocks cosmos.so's client-gated Premium features (custom grid size, canvas mode, bulk export). Server-gated features are NOT bypassed — see README.
 // @author       kyoto-aircon
 // @license      MIT
+// @homepageURL  https://github.com/kyoto-aircon/cosmos-free-premium
+// @supportURL   https://github.com/kyoto-aircon/cosmos-free-premium/issues
 // @match        https://www.cosmos.so/*
 // @match        https://cosmos.so/*
 // @noframes
@@ -325,5 +327,5 @@
   }
 
   // Debug handle.
-  window.__COSMOS_FREE_PREMIUM__ = { version: "1.0.1" };
+  window.__COSMOS_FREE_PREMIUM__ = { version: "1.0.2" };
 })();

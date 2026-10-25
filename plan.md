@@ -59,6 +59,17 @@ documentation of what cannot be bypassed.
   patch (A) is the load-bearing mechanism, B hardens it at init.
 
 ## Files
-- `cosmos-free-premium.user.js` — the userscript
-- `README.md` — usage + honest limits
-- `plan.md` — this plan
+- `cosmos-free-premium.user.js` - the userscript
+- `README.md` - usage + honest limits
+- `plan.md` - this plan
+- `tests/run-tests.mjs` - node:vm unit tests (30 cases, all three paths)
+- `LICENSE` - MIT
+
+## Distribution (added after initial build)
+- GitHub: https://github.com/kyoto-aircon/cosmos-free-premium (public; identity
+  kyoto-aircon everywhere - no personal handle in tracked files).
+- Greasyfork: publish via the web form at /en/script_versions/new using the
+  code pasted from the repo, license MIT, category "cosmos.so".
+  Precondition: the account needs a secure login method (GitHub external login
+  + password removed, or 2FA) before Greasyfork allows posting.
+
